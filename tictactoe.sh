@@ -28,7 +28,18 @@ function displayBoard(){
 displayBoard
 assignLetter()   
 {
-echo "Your latter X"
+   echo "Your latter X"
 }
 assignLetter
+whoPlayFirst() 
+{
+   play=$(($RANDOM % 2))
+   if [[ $play -eq 0 ]]
+   then 
+      echo player 1 will play first
+   else
+      echo player 2 will play first
+   fi
+}
+whoPlayFirst
 
