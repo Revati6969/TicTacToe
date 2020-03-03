@@ -2,7 +2,7 @@
 echo "Welcome to Tictactoe game"
 row=3
 column=3
-function initializeBoard(){  #Uc1 function to create board
+function initializeBoard(){  
 	for((r=0; r<$row; r++))
 	do
 		for((	c=0; c<$column; c++))
@@ -12,7 +12,7 @@ function initializeBoard(){  #Uc1 function to create board
 	done
 }
 initializeBoard
-function displayBoard(){  #finction to displayboard
+function displayBoard(){  
 	for((r=0;r<$row;r++))
 	do
 		echo "----------------"
@@ -26,3 +26,9 @@ function displayBoard(){  #finction to displayboard
 
 }
 displayBoard
+assignLetter()   
+{
+echo "Your latter X"
+}
+assignLetter
+
