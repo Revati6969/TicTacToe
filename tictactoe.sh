@@ -10,7 +10,7 @@ counter=false
 gameCount=1
 
 function whoPlayFirst() {
-	local random=$((RANDOM%2))
+	random=$((RANDOM%2))
 	if [ $random -eq 1 ]
 	then
 		echo "PLAYER play first"
@@ -24,7 +24,7 @@ function whoPlayFirst() {
 }
 
 function playGame() {
-	local flag=$1
+	flag=$1
   	while [ $counter == false ]
   	do
     		if [ $flag -eq 1 ]
@@ -65,6 +65,8 @@ function checkCompWinningCondition(){
 	computerColumnPosition=$( winComAtColoumnPosition )
 	computerDiagonalPosition=$( winComAtDiagonalPosition )
 	computerTakesCorners=$( takesCorner )
+	computerTakesCenter=$( takesCenter )
+
 	if [[ $computerRowPosition -gt 0 ]]
 	then
 		position=$computerRowPosition
@@ -77,6 +79,8 @@ function checkCompWinningCondition(){
 	elif [[ $computerTakesCenter -gt 0 ]]
         then
 		position=$computerTakesCorners
+	else
+		position=$computerTakesCenter
 	fi
 	echo $position
 }
@@ -97,9 +101,18 @@ function takesCorner(){
 	done
 	echo $positionToReturn
 }
+
+function takesCenter(){
+	count=1
+	if [[ ${boardPosition[$(($count+4))]} -ne $COMPUTER ]] && [[ ${boardPosition[$(($count+4))]} -ne $PLAYER ]]
+	then
+		positionToReturn=$(($count+4))	
+	fi
+	echo $positionToReturn
+}
 	
 function winComAtRowPosition(){
-	local row=0;
+	row=0;
 	for (( count=1; count<=3; count++ ))
 	do
 		row=$(( $row+1 ))
@@ -120,7 +133,7 @@ function winComAtRowPosition(){
 }
 
 function winComAtColoumnPosition(){
-	local column=0;
+	column=0;
 	for (( count=1; count<=3; count++ ))
 	do
 		column=$(( $column+1 ))
@@ -140,8 +153,8 @@ function winComAtColoumnPosition(){
 }
 
 function winComAtDiagonalPosition(){
-	local diagCount=1;
-	local count=1;
+	diagCount=1;
+	count=1;
 	if [[ ${boardPosition[$diagCount]} == ${boardPosition[$diagCount+4]} ]] || [[ ${boardPosition[$diagCount+4]} == ${boardPosition[$diagCount+8]} ]] || [[ ${boardPosition[$diagCount+8]} == ${boardPosition[$diagCount]} ]]
 	then
 		for (( innerLoopCounter=1; innerLoopCounter<=3; innerLoopCounter++ ))
