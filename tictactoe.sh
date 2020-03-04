@@ -10,7 +10,7 @@ counter=false
 gameCount=1
 
 function whoPlayFirst() {
-	random=$((RANDOM%2))
+	local random=$((RANDOM%2))
 	if [ $random -eq 1 ]
 	then
 		echo "PLAYER play first"
@@ -24,7 +24,7 @@ function whoPlayFirst() {
 }
 
 function playGame() {
-	flag=$1
+	local flag=$1
   	while [ $counter == false ]
   	do
     		if [ $flag -eq 1 ]
@@ -36,7 +36,7 @@ function playGame() {
 				echo "Slot already taken, Re-enter slot number"
 				playGame $flag
 			else
-      				boardPosition[$cellNumber]="$PLAYER"
+      				boardPosition[$cellNumber]=$PLAYER
       				printBoard
       				checkWinCondition $PLAYER
 				flag=0
@@ -44,12 +44,13 @@ function playGame() {
         	else
 			echo "Computer Enter your Slot :"
 			randomCellNumber=$( checkCompWinningCondition )
+			echo "randomCellNumber : $randomCellNumber"
 			if [[ ( "${boardPosition[$randomCellNumber]}" == $PLAYER ) || ( "${boardPosition[$randomCellNumber]}" == $COMPUTER ) ]]
 			then
 				echo "Slot already take"
 				playGame $flag
 			else
-				boardPosition[$randomCellNumber]="$COMPUTER"
+				boardPosition[$randomCellNumber]=$COMPUTER
 				printBoard
       				checkWinCondition $COMPUTER
 				flag=1
@@ -60,27 +61,45 @@ function playGame() {
 }
 
 function checkCompWinningCondition(){
-	computerRowPosition="$( winComAtRowPosition )"
-	computerColumnPosition="$( WinComAtColoumnPosition )"
-	computerDiagonalPosition="$( winComAtDiagonalPosition )"
-
-   if [[ $computerRowPosition -gt 0 ]]
-  then
-    position=$computerRowPosition
-  elif [[ $computerColumnPosition -gt 0 ]]
-  then
-    position=$computerColumnPosition
-  elif [[ $computerDiagonalPosition -gt 0 ]]
-  then
-    position=$computerDiagonalPosition
-  else
-    position=$((RANDOM%9+1))
-  fi
+	computerRowPosition=$( winComAtRowPosition )
+	computerColumnPosition=$( winComAtColoumnPosition )
+	computerDiagonalPosition=$( winComAtDiagonalPosition )
+	computerTakesCorners=$( takesCorner )
+	if [[ $computerRowPosition -gt 0 ]]
+	then
+		position=$computerRowPosition
+	elif [[ $computerColumnPosition -gt 0 ]]
+	then
+		position=$computerColumnPosition
+	elif [[ $computerDiagonalPosition -gt 0 ]]
+	then
+		position=$computerDiagonalPosition
+	elif [[ $computerTakesCenter -gt 0 ]]
+        then
+		position=$computerTakesCorners
+	fi
 	echo $position
 }
 
+function takesCorner(){
+	count=1
+	positionToReturn=1
+	for (( innerLoopCounter=1; innerLoopCounter<=2; innerLoopCounter++ ))
+	do
+		if [[ ${boardPosition[$count]} -ne $COMPUTER ]] || [[ ${boardPosition[$count]} -ne $PLAYER ]]
+		then
+			positionToReturn=$count
+		elif [[ ${boardPosition[$count+2]} -ne $COMPUTER ]] || [[ ${boardPosition[$count+2]} -ne $PLAYER ]]
+		then
+			positionToReturn=$(( $count+2 ))
+		fi
+		count=$(( $count+6 ))
+	done
+	echo $positionToReturn
+}
+	
 function winComAtRowPosition(){
-	row=0;
+	local row=0;
 	for (( count=1; count<=3; count++ ))
 	do
 		row=$(( $row+1 ))
@@ -88,20 +107,20 @@ function winComAtRowPosition(){
 		then
 			for (( innerLoopCounter=$row; innerLoopCounter<=$(($row+2)); innerLoopCounter++ ))
 			do
-				if [[ ${boardPosition[$innerLoopCounter]} -ne $COMPUTER ]]
+				if [[ ${boardPosition[$innerLoopCounter]} -ne $COMPUTER ]] || [[ ${boardPosition[$innerLoopCounter]} -ne $PLAYER ]]
 				then
 					positionToReturn=$innerLoopCounter
 				fi
 			done
 		else
-			row=$(( $row+3 ))
+			row=$(( $row+1 ))
 		fi
 	done
 	echo $positionToReturn
 }
 
-function WinComAtColoumnPosition(){
-	column=0;
+function winComAtColoumnPosition(){
+	local column=0;
 	for (( count=1; count<=3; count++ ))
 	do
 		column=$(( $column+1 ))
@@ -109,7 +128,7 @@ function WinComAtColoumnPosition(){
 		then
 			for (( innerLoopCounter=1; innerLoopCounter<=3; innerLoopCounter++ ))
 			do
-				if [[ ${boardPosition[$column]} -ne $COMPUTER ]]
+				if [[ ${boardPosition[$column]} -ne $COMPUTER ]] || [[ ${boardPosition[$innerLoopCounter]} -ne $PLAYER ]]
 				then
 					positionToReturn=$column
 				fi
@@ -121,23 +140,24 @@ function WinComAtColoumnPosition(){
 }
 
 function winComAtDiagonalPosition(){
-	diagCount=1;
-	count=1;
+	local diagCount=1;
+	local count=1;
 	if [[ ${boardPosition[$diagCount]} == ${boardPosition[$diagCount+4]} ]] || [[ ${boardPosition[$diagCount+4]} == ${boardPosition[$diagCount+8]} ]] || [[ ${boardPosition[$diagCount+8]} == ${boardPosition[$diagCount]} ]]
 	then
 		for (( innerLoopCounter=1; innerLoopCounter<=3; innerLoopCounter++ ))
 		do
-			if [[ ${boardPosition[$diagCount]} -ne $COMPUTER ]]
+			if [[ ${boardPosition[$diagCount]} -ne $COMPUTER ]] || [[ ${boardPosition[$innerLoopCounter]} -ne $PLAYER ]]
 			then
 				positionToReturn=$diagCount
 			fi
+			diagCount=$(( $diagCount+4 ))
 		done
 	elif [[ ${boardPosition[$count+2]} == ${boardPosition[$count+4]} ]] || [[ ${boardPosition[$count+4]} == ${boardPosition[$count+6]} ]] || [[ ${boardPosition[$count+6]} == ${boardPosition[$count+2]} ]]
 	then
 		for (( innerLoopCounter=1; innerLoopCounter<=3; innerLoopCounter++ ))
 		do
 			count=$(( $count+2 ))
-			if [[ ${boardPosition[$count]} -ne $COMPUTER ]]
+			if [[ ${boardPosition[$count]} -ne $COMPUTER ]] || [[ ${boardPosition[$innerLoopCounter]} -ne $PLAYER ]]
 			then
 				positionToReturn=$count
 			fi
@@ -233,4 +253,3 @@ do
 done
 
 whoPlayFirst
-
