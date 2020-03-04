@@ -66,6 +66,7 @@ function checkCompWinningCondition(){
 	computerDiagonalPosition=$( winComAtDiagonalPosition )
 	computerTakesCorners=$( takesCorner )
 	computerTakesCenter=$( takesCenter )
+	computerTakesSide=$( takesSide )
 
 	if [[ $computerRowPosition -gt 0 ]]
 	then
@@ -78,11 +79,32 @@ function checkCompWinningCondition(){
 		position=$computerDiagonalPosition
 	elif [[ $computerTakesCenter -gt 0 ]]
         then
-		position=$computerTakesCorners
-	else
 		position=$computerTakesCenter
+	elif [[ $computerTakesSide -gt 0 ]]
+	then
+		position=$computerTakesSide
+	else
+		position=$computerTakesCorner
 	fi
 	echo $position
+}
+
+function takesSide(){
+	local count=1
+	if [[ ${boardPosition[$(($count+1))]} -ne $COMPUTER ]] && [[ ${boardPosition[$(($count+1))]} -ne $PLAYER ]]
+	then
+		positionToReturn=$(($count+1))
+	elif [[ ${boardPosition[$(($count+3))]} -ne $COMPUTER ]] && [[ ${boardPosition[$(($count+3))]} -ne $PLAYER ]]
+	then
+		positionToReturn=$(($count+3))
+	elif [[ ${boardPosition[$(($count+5))]} -ne $COMPUTER ]] && [[ ${boardPosition[$(($count+5))]} -ne $PLAYER ]]
+	then
+		positionToReturn=$(($count+5))
+	elif [[ ${boardPosition[$(($count+7))]} -ne $COMPUTER ]] && [[ ${boardPosition[$(($count+7))]} -ne $PLAYER ]]
+	then
+		positionToReturn=$(($count+7))
+	fi
+	echo $positionToReturn
 }
 
 function takesCorner(){
