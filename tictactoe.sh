@@ -1,15 +1,17 @@
-#!/bin/bash
+#!/bin/bash -x
 
 echo "welcome in tic tac toe game"
 
 declare -a boardPosition
 
-PLAYER=X
-COMPUTER=O
-9=turn
+PLAYER="X"
+COMPUTER="O"
+turn=9
+counter=false
+gameCount=1
 
 function whoPlayFirst() {
-	random=$((RANDOM%2))
+   random=$((RANDOM%2))
 	if [ $random -eq 1 ]
 	then
 		echo "PLAYER play first"
@@ -18,74 +20,128 @@ function whoPlayFirst() {
 	else
 		echo "COMPUTER play first"
 		printBoard
-		#playGame $random
+		playGame $random
 	fi
 }
 
 function playGame() {
-	a=$1
-  	limit=0
-  	# limit 0 work 1 stop 
-  	while [ $limit -eq 0 ]
+	flag=$1
+  	while [ $counter == false ]
   	do
-    		if [ $a -eq 1 ]
+    		if [ $flag -eq 1 ]
     		then
-      			echo "PLay Player Enter your number : \c"
+      			echo "Player Enter your Slot :"
       			read cellNumber
-      				boardPosition[$cellNumber]=$PLAYER
+			if [[ ( "${boardPosition[$cellNumber]}" == $PLAYER ) || ( "${boardPosition[$cellNumber]}" == $COMPUTER ) ]]
+			then
+				echo "Slot already taken, Re-enter slot number"
+				playGame $flag
+			else
+      				boardPosition[$cellNumber]="$PLAYER"
       				printBoard
-      				limit=$( checkWinCondition )
+      				checkWinCondition $PLAYER
+				flag=0
+			fi
         	else
-      			printf Play by computer
-     			printBoard
-  		fi
-		if [ $limit -eq 1 ]
-		then
-			echo "Player win"
+			echo "Computer Enter your Slot :"
+			randomCellNumber=$((RANDOM%9+1))
+			if [[ ( "${boardPosition[$randomCellNumber]}" == $PLAYER ) || ( "${boardPosition[$randomCellNumber]}" == $COMPUTER ) ]]
+			then
+				echo "Slot already take"
+				playGame $flag
+			else
+				boardPosition[$randomCellNumber]="$COMPUTER"		
+				printBoard
+      				checkWinCondition $COMPUTER
+				flag=1
+			fi
 		fi
-  done
+		((gameCount++))
+  	done
 }
 
 function checkWinCondition () {
-	i=1
-    	if [[ ( ${boardPosition[$i]} -eq $PLAYER ) && ( ${boardPosition[$(($i+1))]} -eq $PLAYER ) && ( ${boardPosition[$(($i+2))]} -eq $PLAYER ) ]]
-    	then
-      		echo 1
-    	elif [[ ( ${boardPosition["$i+3"]} -eq $PLAYER ) && ( ${boardPosition["$i+4"]} -eq $PLAYER ) && ( ${boardPosition["$i+5"]} -eq $PLAYER ) ]]
-    	then
-      		echo 1
-    	elif [[ ( ${boardPosition["$i+6"]} -eq $PLAYER ) && ( ${boardPosition["$i+7"]} -eq $PLAYER ) && ( ${boardPosition["$i+8"]} -eq $PLAYER ) ]]
-    	then
-      		echo 1
-    	elif [[ ( ${boardPosition["$i"]} -eq $PLAYER ) && ( ${boardPosition["$i+3"]} -eq $PLAYER ) && ( ${boardPosition["$i+6"]} -eq $PLAYER ) ]]
-    	then
-      		echo 1
-    	elif [[ ( ${boardPosition["$i+1"]} -eq $PLAYER ) && ( ${boardPosition["$i+4"]} -eq $PLAYER ) && ( ${boardPosition["$i+7"]} -eq $PLAYER ) ]]
-    	then
-      		echo 1
-    	elif [[ ( ${boardPosition["$i+2"]} -eq $PLAYER ) && ( ${boardPosition["$i+5"]} -eq $PLAYER ) && ( ${boardPosition["$i+8"]} -eq $PLAYER ) ]]
-    	then
-      		echo 1
-    	elif [[ ( ${boardPosition["$i"]} -eq $PLAYER ) && ( ${boardPosition["$i+4"]} -eq $PLAYER ) && ( ${boardPosition["$i+8"]} -eq $PLAYER ) ]]
-    	then
-      		echo 1
-    	elif [[ ( ${boardPosition["$i+2"]} -eq $PLAYER ) && ( ${boardPosition["$i+4"]} -eq $PLAYER ) && ( ${boardPosition["$i+6"]} -eq $PLAYER ) ]]
-    	then
-      		echo 1
-    	else
-      		echo 0
-    	fi
+	symbol=$1
+	checkRows $symbol
+	checkColumns $symbol
+	checkDiagonals $symbol
+	gameTieCheck
+}
+
+function checkRows () {
+	symbol=$1
+	loopCheck=1
+	position=1
+	while [ $loopCheck -le 3 ]
+	do
+		if [[ ${boardPosition[$position]} == ${boardPosition[$(($position+1))]} ]] && [[ ${boardPosition[$(($position+1))]} == ${boardPosition[$(($position+2))]} ]] && [[ ${boardPosition[$position]} == $symbol ]]
+		then
+			counter=true
+			echo "$symbol Won"
+			break
+		else
+			position=$(($position+3))
+		fi
+		((loopCheck++))
+	done
+}
+
+function checkDiagonals () {
+	symbol=$1
+	loopCheck=1
+	position=1
+	while [ $loopCheck -le 3 ]
+	do
+		if [[ ${boardPosition[$position]} == ${boardPosition[$(($position+4))]} ]] && [[ ${boardPosition[$(($position+4))]} == ${boardPosition[$(($position+8))]} ]] && [[ ${boardPosition[$position]} == $symbol ]]
+		then
+			counter=true
+			echo "$symbol Won"
+			break
+		elif [[ ${boardPosition[$(($position+2))]} == ${boardPosition[$(($position+4))]} ]] && [[ ${boardPosition[$(($position+4))]} == ${boardPosition[$(($position+6))]} ]]  && [[ ${boardPosition[$(($position+2))]} == $symbol ]]
+		then
+			counter=true
+			echo "$symbol Won"
+			break
+		fi
+		((loopCheck++))
+	done
+}
+
+function checkColumns () {
+	symbol=$1
+	loopCheck=1
+	position=1
+	while [ $loopCheck -le 3 ]
+	do
+		if [[ ${boardPosition[$position]} == ${boardPosition[$(($position+3))]} ]] && [[ ${boardPosition[$(($position+3))]} == ${boardPosition[$(($position+6))]} ]]  && [[ ${boardPosition[$position]} == $symbol ]]
+		then
+			counter=true
+			echo "$symbol Won"
+			break
+		else
+			position=$(($position+1))
+		fi
+		((loopCheck++))
+	done
+}
+
+function gameTieCheck () {
+	if [ $gameCount -eq 9 ]
+	then
+		echo "Match Tie"
+		counter=true
+	fi
 }
 
 function printBoard () {
-	echo "|-----|-----|-----|"
-	echo "|  "${boardPosition[1]}"  |  "${boardPosition[2]}"  |  "${boardPosition[3]}"  |"
-	echo "|-----|-----|-----|"
- 	echo "|  "${boardPosition[4]}"  |  "${boardPosition[5]}"  |  "${boardPosition[6]}"  |"
-	echo "|-----|-----|-----|"
-        echo "|  "${boardPosition[7]}"  |  "${boardPosition[8]}"  |  "${boardPosition[9]}"  |"
-	echo "|-----|-----|-----|"
-	printf "\n"
+	i=1
+	for ((Counter=0; Counter<3; Counter++))
+	do
+		echo "|-----|-----|-----|"
+		echo "|  "${boardPosition[counter+i]}"  |  "${boardPosition[counter+i+1]}"  |  "${boardPosition[counter+i+2]}"  |"
+		echo "|-----|-----|-----|"
+		i=$((i+3))
+	done
 }
 
 for (( i=1; i<=9; i++ ))
