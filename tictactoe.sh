@@ -10,7 +10,7 @@ counter=false
 gameCount=1
 
 function whoPlayFirst() {
-	local random=$((RANDOM%2))
+	random=$((RANDOM%2))
 	if [ $random -eq 1 ]
 	then
 		echo "PLAYER play first"
@@ -24,7 +24,7 @@ function whoPlayFirst() {
 }
 
 function playGame() {
-	local flag=$1
+	flag=$1
   	while [ $counter == false ]
   	do
     		if [ $flag -eq 1 ]
@@ -80,7 +80,7 @@ function checkCompWinningCondition(){
 }
 
 function winComAtRowPosition(){
-	local row=0;
+	row=0;
 	for (( count=1; count<=3; count++ ))
 	do
 		row=$(( $row+1 ))
@@ -101,7 +101,7 @@ function winComAtRowPosition(){
 }
 
 function WinComAtColoumnPosition(){
-	local column=0;
+	column=0;
 	for (( count=1; count<=3; count++ ))
 	do
 		column=$(( $column+1 ))
@@ -121,8 +121,8 @@ function WinComAtColoumnPosition(){
 }
 
 function winComAtDiagonalPosition(){
-	local diagCount=1;
-	local count=1;
+	diagCount=1;
+	count=1;
 	if [[ ${boardPosition[$diagCount]} == ${boardPosition[$diagCount+4]} ]] || [[ ${boardPosition[$diagCount+4]} == ${boardPosition[$diagCount+8]} ]] || [[ ${boardPosition[$diagCount+8]} == ${boardPosition[$diagCount]} ]]
 	then
 		for (( innerLoopCounter=1; innerLoopCounter<=3; innerLoopCounter++ ))
