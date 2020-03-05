@@ -148,7 +148,7 @@ function winComAtRowPosition(){
 				fi
 			done
 		else
-			row=$(( $row+1 ))
+			row=$(( $row+3 ))
 		fi
 	done
 	echo $positionToReturn
