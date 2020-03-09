@@ -1,14 +1,17 @@
-#!/bin/bash
+#!/bin/bash -x
 
 echo "welcome in tic tac toe game"
 declare -a boardPosition
 
+#CONSTANTS
 PLAYER="X"
 COMPUTER="O"
+#VARIABLES
 turn=9
 counter=false
 gameCount=1
 
+#TOSS TO PLAY FIRST
 function whoPlayFirst() {
 	random=$((RANDOM%2))
 	if [ $random -eq 1 ]
@@ -23,6 +26,7 @@ function whoPlayFirst() {
 	fi
 }
 
+#START GAME
 function playGame() {
 	flag=$1
   	while [ $counter == false ]
@@ -60,6 +64,7 @@ function playGame() {
   	done
 }
 
+#COMPUTERS WINNING CONDITIONS
 function checkCompWinningCondition(){
 	computerRowPosition=$( winComAtRowPosition )
 	computerColumnPosition=$( winComAtColoumnPosition )
@@ -89,6 +94,7 @@ function checkCompWinningCondition(){
 	echo $position
 }
 
+#COMPUTER CHECK FOR SIDES
 function takesSide(){
 	local count=1
 	if [[ ${boardPosition[$(($count+1))]} -ne $COMPUTER ]] && [[ ${boardPosition[$(($count+1))]} -ne $PLAYER ]]
@@ -107,6 +113,7 @@ function takesSide(){
 	echo $positionToReturn
 }
 
+#COMPUTER CHECKS FOR CORNERS
 function takesCorner(){
 	count=1
 	positionToReturn=1
@@ -124,6 +131,7 @@ function takesCorner(){
 	echo $positionToReturn
 }
 
+#COMPUTER CHECKS FOR CENTER
 function takesCenter(){
 	count=1
 	if [[ ${boardPosition[$(($count+4))]} -ne $COMPUTER ]] && [[ ${boardPosition[$(($count+4))]} -ne $PLAYER ]]
@@ -132,7 +140,8 @@ function takesCenter(){
 	fi
 	echo $positionToReturn
 }
-	
+
+#COMPUTER CHECKS WINNING AT ROWS
 function winComAtRowPosition(){
 	row=0;
 	for (( count=1; count<=3; count++ ))
@@ -154,6 +163,7 @@ function winComAtRowPosition(){
 	echo $positionToReturn
 }
 
+#COMPUTER CHECKS WINNING AT COLUMNS
 function winComAtColoumnPosition(){
 	column=0;
 	for (( count=1; count<=3; count++ ))
@@ -174,6 +184,7 @@ function winComAtColoumnPosition(){
 	echo $positionToReturn
 }
 
+#COMPUTER CHECKS WINNING AT DIAGONALS
 function winComAtDiagonalPosition(){
 	diagCount=1;
 	count=1;
@@ -201,14 +212,14 @@ function winComAtDiagonalPosition(){
 	echo $positionToReturn
 }
 
-
+#ALL WINNING CONDITIONS FOR BOTH PLAYER AND COMPUTER
 function checkWinCondition () {
 	checkRows $1
 	checkColumns $1
 	checkDiagonals $1
 	gameTieCheck
 }
-
+#WINNING AT ROWS
 function checkRows () {
 	loopCheck=1
 	position=1
@@ -226,6 +237,7 @@ function checkRows () {
 	done
 }
 
+#WINNING AT DIAGONALS
 function checkDiagonals () {
 	loopCheck=1
 	position=1
@@ -246,6 +258,7 @@ function checkDiagonals () {
 	done
 }
 
+#WINNING AT COLUMNS
 function checkColumns () {
 	loopCheck=1
 	position=1
@@ -263,6 +276,7 @@ function checkColumns () {
 	done
 }
 
+#CHECK TIE OR NOT
 function gameTieCheck () {
 	if [ $gameCount -ge 9 ]
 	then
@@ -271,6 +285,7 @@ function gameTieCheck () {
 	fi
 }
 
+#DISPLAY BOARD
 function printBoard () {
 	index=1
 	for ((Counter=0; Counter<3; Counter++))
